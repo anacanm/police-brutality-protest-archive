@@ -12,7 +12,7 @@ defmodule ProtestArchive.Cache do
   end
 
   def put(server, new_state) do
-    GenServer.call(via_tuple(server), {:put, new_state})
+    GenServer.cast(via_tuple(server), {:put, new_state})
   end
 
   # Server
@@ -28,14 +28,14 @@ defmodule ProtestArchive.Cache do
   end
 
   @impl true
-  def handle_call({:put, new_state}, _from, state) do
+  def handle_cast({:put, new_state}, state) do
     # if the new state is not good, preserve the old state
     cond do
       new_state == nil ->
-        {:reply, state, state}
+        {:noreply, state}
 
       true ->
-        {:reply, new_state, new_state}
+        {:noreply, new_state}
     end
   end
 
