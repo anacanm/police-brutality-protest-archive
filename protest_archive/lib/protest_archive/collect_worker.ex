@@ -27,6 +27,6 @@ defmodule ProtestArchive.CollectWorker do
   @impl true
   def handle_call({:get, {type, tag}, num_results, from}, _from, _state) do
     data = CollectHelper.get_data!({type, tag}, num_results, from)
-    {:reply, data, data}
+    {:reply, data, []}
   end
 end
