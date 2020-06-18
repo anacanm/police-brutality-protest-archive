@@ -1,13 +1,13 @@
-defmodule ProtestArchive.Collect do
-  @moduledoc """
-  ProtestArchive.Collect provides an interface for collecting (fetching and saving to the cache and database) news and tweet data
-  """
-  def get_data!(queries, num_results \\ 20, from \\ nil) when is_list(queries) do
+defmodule ProtestArchive.CollectHelper do
+  # API ##########################################################################
+
+  def get_data!(queries, num_results, from) when is_list(queries) do
     url(queries, num_results, from)
     |> fetch_data!()
   end
 
-  #############################################
+  # Helper #######################################################################
+
   defp fetch_data!(url) when is_bitstring(url) do
     url
     |> HTTPoison.get!()
