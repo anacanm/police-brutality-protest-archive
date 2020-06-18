@@ -8,11 +8,12 @@ defmodule ProtestArchive.CollectWorker do
 
   # Client
 
-  def start_link() do
+  def start_link(_) do
+    IO.puts("Starting collect worker")
     GenServer.start_link(__MODULE__, [])
   end
 
-  def get_news(pid, queries, num_results \\ 20, from \\ nil) do
+  def get_news(pid, queries, num_results, from) do
     GenServer.call(pid, {:get_news, queries, num_results, from})
   end
 

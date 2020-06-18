@@ -4,7 +4,8 @@ defmodule ProtestArchive.Application do
   def start(_type, _args) do
     children = [
       ProtestArchive.ProcessRegistry,
-      ProtestArchive.CacheSupervisor
+      ProtestArchive.CacheSupervisor,
+      ProtestArchive.Collect
     ]
 
     options = [strategy: :one_for_one]
