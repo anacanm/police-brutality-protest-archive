@@ -4,9 +4,10 @@ defmodule ProtestArchive.CollectHelper do
   def get_data!({type, tag}, num_results, from) do
     url({type, tag}, num_results, from)
     |> fetch_data!(type)
+    |> decode_response(type)
   end
 
-  # Helper #######################################################################
+  # Helpers #######################################################################
 
   defp fetch_data!(url, :news) when is_bitstring(url) do
     # the news api stores the auth key in the url, so no headers are needed
@@ -23,6 +24,8 @@ defmodule ProtestArchive.CollectHelper do
 
     HTTPoison.get!(url, headers)
   end
+
+  # building url #######################################################
 
   def url({type, tag}, num_results, from) do
     base_url(type, num_results, from)
@@ -58,6 +61,25 @@ defmodule ProtestArchive.CollectHelper do
 
   defp add_tag(url, _type = :tweet, tag) when is_list(tag) do
     url <> "q=#{encode_queries(tag)}"
+  end
+
+  # working with response ########################
+
+  defp decode_response(response, _type = :news) do
+    response |> handle_decode()
+  end
+
+  defp decode_response(response, _type = :tweet) do
+    response
+    |> handle_decode()
+    |> Access.get("statuses")
+    |> hd()
+  end
+
+  defp handle_decode(response) do
+    response
+    |> Map.fetch!(:body)
+    |> Poison.decode!()
   end
 
   # Helpers ###########################################################
