@@ -13,8 +13,8 @@ defmodule ProtestArchive.CollectWorker do
     GenServer.start_link(__MODULE__, [])
   end
 
-  def get_news(pid, queries, num_results, from) do
-    GenServer.call(pid, {:get_news, queries, num_results, from})
+  def get(pid, {type, tag}, num_results, from) do
+    GenServer.call(pid, {:get, {type, tag}, num_results, from})
   end
 
   # Server
@@ -25,8 +25,8 @@ defmodule ProtestArchive.CollectWorker do
   end
 
   @impl true
-  def handle_call({:get_news, queries, num_results, from}, _from, _state) do
-    data = CollectHelper.get_data!(queries, num_results, from)
+  def handle_call({:get, {type, tag}, num_results, from}, _from, _state) do
+    data = CollectHelper.get_data!({type, tag}, num_results, from)
     {:reply, data, data}
   end
 end

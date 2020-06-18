@@ -11,7 +11,7 @@ defmodule ProtestArchive.Collect do
     )
   end
 
-  def get_news(queries, num_results \\ 20, from \\ nil) do
-    :poolboy.transaction(__MODULE__, fn worker_pid -> CollectWorker.get_news(worker_pid, queries, num_results, from) end)
+  def get({type, tag}, num_results \\ 20, from \\ nil) do
+    :poolboy.transaction(__MODULE__, fn worker_pid -> CollectWorker.get(worker_pid, {type, tag}, num_results, from) end)
   end
 end
