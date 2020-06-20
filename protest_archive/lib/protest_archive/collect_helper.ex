@@ -50,7 +50,7 @@ defmodule ProtestArchive.CollectHelper do
   end
 
   defp base_url(:tweet, num_results, _from) do
-    "https://api.twitter.com/1.1/search/tweets.json?lang=en&count=#{num_results}&"
+    "https://api.twitter.com/1.1/search/tweets.json?lang=en&count=#{num_results}&tweet_mode=extended&"
   end
 
   @spec add_tag(String.t(), atom, String.t()) :: String.t()
@@ -61,7 +61,7 @@ defmodule ProtestArchive.CollectHelper do
   defp add_tag(url, _type = :tweet, tag) when is_bitstring(tag) do
     # if there is a string for a tweet, treat it as a combined hashtag
     tag = String.replace(tag, "\s", "")
-    url <> "q=#{encode_tag("#" <> tag)}"
+    url <> "q=#{encode_tag("#" <> tag)}+AND+-filter:retweets"
   end
 
   @spec add_tag(String.t(), atom, list(String.t())) :: String.t()
@@ -72,26 +72,24 @@ defmodule ProtestArchive.CollectHelper do
   # working with response ########################
 
   defp decode_response(response, _type = :news) do
-    response |> handle_decode() |> change_sources_to_string()
+    response |> handle_decode() |> change_news_sources_to_string()
   end
 
   defp decode_response(response, _type = :tweet) do
     response
     |> handle_decode()
     |> Access.get("statuses")
-    |> hd()
   end
 
-  # handle_decode returns a map if the type is a tweet, or a list of map if the type is news
-  @spec handle_decode(%HTTPoison.Response{}) :: map | list(map)
+  @spec handle_decode(%HTTPoison.Response{}) :: list(map)
   defp handle_decode(response) do
     response
     |> Map.fetch!(:body)
     |> Poison.decode!()
   end
 
-  @spec change_sources_to_string(map) :: list(map)
-  defp change_sources_to_string(response) when is_map(response) do
+  @spec change_news_sources_to_string(list) :: list(map)
+  defp change_news_sources_to_string(response) do
     response["articles"]
     |> Enum.map(fn article ->
       Map.update(article, "source", "", fn source -> source["name"] end)
