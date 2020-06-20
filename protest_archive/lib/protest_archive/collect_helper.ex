@@ -79,6 +79,7 @@ defmodule ProtestArchive.CollectHelper do
     response
     |> handle_decode()
     |> Access.get("statuses")
+    |> filter_tweet_data()
   end
 
   @spec handle_decode(%HTTPoison.Response{}) :: list(map)
@@ -93,6 +94,20 @@ defmodule ProtestArchive.CollectHelper do
     response["articles"]
     |> Enum.map(fn article ->
       Map.update(article, "source", "", fn source -> source["name"] end)
+    end)
+  end
+
+  def filter_tweet_data(response) do
+    response
+    |> Enum.map(fn tweet ->
+      %{
+        "author" => tweet["user"]["name"],
+        "authorHandle" => "@#{tweet["user"]["screen_name"]}",
+        "publishedAt" => tweet["created_at"],
+        "text" => tweet["full_text"],
+        "url" => "https://twitter.com/#{tweet["user"]["id"]}/statuses/#{tweet["id"]}",
+        "urlToProfileImage" => tweet["user"]["profile_image_url_https"]
+      }
     end)
   end
 
