@@ -72,7 +72,10 @@ defmodule ProtestArchive.CollectHelper do
   # working with response ########################
 
   defp decode_response(response, _type = :news) do
-    response |> handle_decode() |> change_news_sources_to_string()
+    response
+    |> handle_decode()
+    |> change_news_sources_to_string()
+    |> string_keys_to_atoms()
   end
 
   defp decode_response(response, _type = :tweet) do
@@ -125,5 +128,38 @@ defmodule ProtestArchive.CollectHelper do
     [head | Enum.map(tail, fn query -> " #{operator} " <> String.trim(query) end)]
     |> Enum.join()
     |> URI.encode_www_form()
+  end
+
+  @spec string_keys_to_atoms(list(map)) :: list(map)
+  defp string_keys_to_atoms(list_of_maps) do
+    list_of_maps
+    |> Enum.map(fn map ->
+      for {key, value} <- map, into: %{}, do: {atomify(key), value}
+    end)
+  end
+
+  # converts camel-case strings to atoms
+  # ex: atomify("helloWorld") -> hello_world
+  @spec atomify(String.t()) :: atom
+  defp atomify(elem) do
+    elem
+    |> correct_uppercase_characters()
+    |> String.to_atom()
+  end
+
+  @spec correct_uppercase_characters(String.t()) :: String.t()
+  defp correct_uppercase_characters(string) do
+    string
+    |> String.split("", trim: true)
+    |> Enum.map(fn char ->
+      cond do
+        char =~ ~r/[A-Z]+/ ->
+          "_" <> String.downcase(char)
+
+        true ->
+          char
+      end
+    end)
+    |> Enum.join()
   end
 end
