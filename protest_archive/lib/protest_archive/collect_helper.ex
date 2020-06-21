@@ -101,12 +101,12 @@ defmodule ProtestArchive.CollectHelper do
     response
     |> Enum.map(fn tweet ->
       %{
-        "author" => tweet["user"]["name"],
-        "authorHandle" => "@#{tweet["user"]["screen_name"]}",
-        "publishedAt" => tweet["created_at"],
-        "text" => tweet["full_text"],
-        "url" => "https://twitter.com/#{tweet["user"]["id_str"]}/statuses/#{tweet["id_str"]}",
-        "urlToProfileImage" => tweet["user"]["profile_image_url_https"]
+        :author => tweet["user"]["name"],
+        :authorHandle => "@#{tweet["user"]["screen_name"]}",
+        :publishedAt => tweet["created_at"],
+        :text => tweet["full_text"],
+        :url => "https://twitter.com/#{tweet["user"]["id_str"]}/statuses/#{tweet["id_str"]}",
+        :urlToProfileImage => tweet["user"]["profile_image_url_https"]
       }
     end)
   end
