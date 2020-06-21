@@ -97,6 +97,7 @@ defmodule ProtestArchive.CollectHelper do
     response["articles"]
     |> Enum.map(fn article ->
       Map.update(article, "source", "", fn source -> source["name"] end)
+      Map.update(article, "author", "", fn author -> author || "" end)
     end)
   end
 
