@@ -96,8 +96,10 @@ defmodule ProtestArchive.CollectHelper do
   defp change_news_sources_to_string(response) do
     response["articles"]
     |> Enum.map(fn article ->
-      Map.update(article, "source", "", fn source -> source["name"] end)
-      Map.update(article, "author", "", fn author -> author || "" end)
+      article
+      |> Map.update("source", "", fn source -> source["name"] end)
+      |> Map.update("author", "", fn author -> author || "" end)
+      |> Map.update("content", "", fn content -> content || article["description"] end)
     end)
   end
 
