@@ -10,5 +10,16 @@ defmodule ProtestArchive.Article do
     field(:description, :string)
     field(:published_at, :string)
     field(:url_to_image, :string)
+    field(:tag, :string)
+  end
+
+  def changeset(article, params \\ %{}) do
+    article
+    |> Ecto.Changeset.cast(params, fields())
+    |> Ecto.Changeset.validate_required(fields())
+  end
+
+  defp fields do
+    [:title, :author, :source, :url, :content, :description, :published_at, :url_to_image, :tag]
   end
 end

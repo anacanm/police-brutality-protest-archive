@@ -1,11 +1,12 @@
 defmodule ProtestArchive.CollectHelper do
   # API ##########################################################################
 
-  @spec get_data!(tuple, number | String.t(), String.t()) :: list(map) | map
+  @spec get_data!(tuple, number | String.t(), String.t()) :: list(map)
   def get_data!({type, tag}, num_results, from) do
     url({type, tag}, num_results, from)
     |> fetch_data!(type)
     |> decode_response(type)
+    |> add_tag_to_response(tag)
   end
 
   # Helpers #######################################################################
@@ -71,6 +72,7 @@ defmodule ProtestArchive.CollectHelper do
 
   # working with response ########################
 
+  @spec decode_response(%HTTPoison.Response{}, atom) :: list(map)
   defp decode_response(response, _type = :news) do
     response
     |> handle_decode()
@@ -114,6 +116,14 @@ defmodule ProtestArchive.CollectHelper do
         :url => "https://twitter.com/#{tweet["user"]["id_str"]}/statuses/#{tweet["id_str"]}",
         :url_to_profile_image => tweet["user"]["profile_image_url_https"]
       }
+    end)
+  end
+
+  @spec add_tag_to_response(list(map), String.t()) :: list(map)
+  defp add_tag_to_response(response, tag) do
+    response
+    |> Enum.map(fn elem ->
+      Map.update(elem, :tag, tag, fn _ -> tag end)
     end)
   end
 
