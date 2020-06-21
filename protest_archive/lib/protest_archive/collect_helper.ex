@@ -105,7 +105,7 @@ defmodule ProtestArchive.CollectHelper do
         "authorHandle" => "@#{tweet["user"]["screen_name"]}",
         "publishedAt" => tweet["created_at"],
         "text" => tweet["full_text"],
-        "url" => "https://twitter.com/#{tweet["user"]["id"]}/statuses/#{tweet["id"]}",
+        "url" => "https://twitter.com/#{tweet["user"]["id_str"]}/statuses/#{tweet["id_str"]}",
         "urlToProfileImage" => tweet["user"]["profile_image_url_https"]
       }
     end)
