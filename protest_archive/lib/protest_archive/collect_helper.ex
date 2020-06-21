@@ -109,6 +109,7 @@ defmodule ProtestArchive.CollectHelper do
     response
     |> Enum.map(fn tweet ->
       %{
+        :tweet_id => tweet["id_str"],
         :author => tweet["user"]["name"],
         :author_handle => "@#{tweet["user"]["screen_name"]}",
         :published_at => tweet["created_at"],
