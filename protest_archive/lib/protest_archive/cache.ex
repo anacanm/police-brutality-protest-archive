@@ -19,24 +19,20 @@ defmodule ProtestArchive.Cache do
 
   @impl true
   def init(state \\ []) do
+    # TODO: on init, send message to self to read from DB or query api
     {:ok, state}
   end
 
   @impl true
   def handle_call(:get, _from, state) do
+    # TODO: if state == [], query from DB. if DB is empty, query api
     {:reply, state, state}
   end
 
   @impl true
   def handle_cast({:put, new_state}, state) do
     # if the new state is not good, preserve the old state
-    cond do
-      new_state == nil ->
-        {:noreply, state}
-
-      true ->
-        {:noreply, new_state}
-    end
+    {:noreply, new_state || state}
   end
 
   ##########################

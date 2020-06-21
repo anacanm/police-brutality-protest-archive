@@ -4,6 +4,7 @@ defmodule ProtestArchive.CacheSupervisor do
   def start_link() do
     IO.inspect("Starting cache supervisor")
 
+    # TODO: update children to have both news and tweet tags
     children =
       Enum.map(["black lives matter", "police brutality", "protest"], fn elem ->
         Supervisor.child_spec(Cache, id: {:news, elem}, start: {Cache, :start_link, [{:news, elem}]})

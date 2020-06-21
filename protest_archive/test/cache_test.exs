@@ -12,7 +12,10 @@ defmodule CacheTest do
   end
 
   test "cannot add to cache server that does not exist" do
-    assert catch_exit(Cache.put({:news, "tag that does not exist"}, [:some_state]))
+    Cache.put({:news, "tag that does not exist"}, [:some_state])
+    via = ProcessRegistry.via_tuple({:news, "tag that does not exist"})
+    # assert that no cache was registered
+    assert Registry.lookup(ProcessRegistry, via) == []
   end
 
   test "can put new state into cache server" do
