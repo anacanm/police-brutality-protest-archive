@@ -31,7 +31,7 @@ defmodule ProtestArchive.CollectHelper do
   # building url #######################################################
 
   @spec url(tuple, number, String.t()) :: String.t()
-  def url({type, tag}, num_results, from) do
+  defp url({type, tag}, num_results, from) do
     base_url(type, num_results, from)
     |> add_tag(type, tag)
   end
@@ -102,17 +102,18 @@ defmodule ProtestArchive.CollectHelper do
       |> Map.update("source", "", fn source -> source["name"] end)
       |> Map.update("author", "", fn author -> author || "" end)
       |> Map.update("content", "", fn content -> content || article["description"] end)
+      |> Map.update("published_at", DateTime.utc_now(), fn date_time -> DateTime.from_iso8601(date_time) end)
     end)
   end
 
-  def filter_tweet_data(response) do
+  defp filter_tweet_data(response) do
     response
     |> Enum.map(fn tweet ->
       %{
         :tweet_id => tweet["id_str"],
         :author => tweet["user"]["name"],
         :author_handle => "@#{tweet["user"]["screen_name"]}",
-        :published_at => tweet["created_at"],
+        :published_at => twitter_date_to_iso8601(tweet["created_at"]),
         :text => tweet["full_text"],
         :url => "https://twitter.com/#{tweet["user"]["id_str"]}/statuses/#{tweet["id_str"]}",
         :url_to_profile_image => tweet["user"]["profile_image_url_https"]
@@ -175,5 +176,39 @@ defmodule ProtestArchive.CollectHelper do
       end
     end)
     |> Enum.join()
+  end
+
+  @spec twitter_date_to_iso8601(String.t()) :: DateTime.t()
+  defp twitter_date_to_iso8601(date_time) do
+    year = String.slice(date_time, -4, 4)
+    month = String.slice(date_time, 4, 3) |> month()
+    day = String.slice(date_time, 8, 2) |> String.trim()
+    time = String.slice(date_time, -19, 8)
+
+    {:ok, result, _} = DateTime.from_iso8601("#{year}-#{month}-#{day}T#{time}Z")
+    result
+  end
+
+  @spec month(String.t()) :: number()
+  defp month(string) do
+    # ! NOTE: I could not find any documentation (thanks twitter!) about how they abbreviate months
+    # ! i need the abbreviates to convert to iso8601 to use as a date time, so that I can sort by date of publication
+    # ! let's hope i guessed the abbreviates correctly
+    months = %{
+      "Jan" => "01",
+      "Feb" => "02",
+      "Mar" => "03",
+      "Apr" => "04",
+      "May" => "05",
+      "Jun" => "06",
+      "Jul" => "07",
+      "Aug" => "08",
+      "Sep" => "09",
+      "Oct" => "10",
+      "Nov" => "11",
+      "Dec" => "12"
+    }
+
+    Access.get(months, string)
   end
 end
