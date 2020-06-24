@@ -102,7 +102,9 @@ defmodule ProtestArchive.CollectHelper do
       |> Map.update("source", "", fn source -> source["name"] end)
       |> Map.update("author", "", fn author -> author || "" end)
       |> Map.update("content", "", fn content -> content || article["description"] end)
-      |> Map.update("published_at", DateTime.utc_now(), fn date_time -> DateTime.from_iso8601(date_time) end)
+      |> Map.update("published_at", DateTime.truncate(DateTime.utc_now(), :second), fn date_time ->
+        from_iso_trunc(date_time)
+      end)
     end)
   end
 
@@ -185,8 +187,7 @@ defmodule ProtestArchive.CollectHelper do
     day = String.slice(date_time, 8, 2) |> String.trim()
     time = String.slice(date_time, -19, 8)
 
-    {:ok, result, _} = DateTime.from_iso8601("#{year}-#{month}-#{day}T#{time}Z")
-    result
+    from_iso_trunc("#{year}-#{month}-#{day}T#{time}Z")
   end
 
   @spec month(String.t()) :: number()
@@ -210,5 +211,11 @@ defmodule ProtestArchive.CollectHelper do
     }
 
     Access.get(months, string)
+  end
+
+  @spec from_iso_trunc(String.t()) :: DateTime.t()
+  defp from_iso_trunc(date_time) do
+    {:ok, result, _} = DateTime.from_iso8601(date_time)
+    DateTime.truncate(result, :second)
   end
 end
