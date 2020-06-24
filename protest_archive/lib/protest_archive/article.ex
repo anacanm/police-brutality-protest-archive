@@ -8,7 +8,7 @@ defmodule ProtestArchive.Article do
     field(:url, :string)
     field(:content, :string)
     field(:description, :string)
-    field(:published_at, :string)
+    field(:published_at, :utc_datetime)
     field(:url_to_image, :string)
     field(:tag, :string)
   end
