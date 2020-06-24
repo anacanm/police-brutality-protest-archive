@@ -16,6 +16,7 @@ defmodule ProtestArchive.Article do
   def changeset(article, params \\ %{}) do
     article
     |> Ecto.Changeset.cast(params, fields())
+    |> Ecto.Changeset.unique_constraint([:title, :author])
     |> Ecto.Changeset.validate_required(fields())
   end
 
