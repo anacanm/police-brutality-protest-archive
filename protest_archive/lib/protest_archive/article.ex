@@ -1,5 +1,6 @@
 defmodule ProtestArchive.Article do
   use Ecto.Schema
+  alias ProtestArchive.{Repo, Article}
 
   schema "articles" do
     field(:title, :string)
@@ -13,6 +14,14 @@ defmodule ProtestArchive.Article do
     field(:tag, :string)
   end
 
+
+  @spec insert_one(map) :: {:ok, %ProtestArchive.Article{}} | {:error, term}
+  def insert_one(params) do
+    changeset(%Article{}, params)
+    |> Repo.insert()
+  end
+
+  @spec changeset(%ProtestArchive.Article{}, map) :: term
   def changeset(article, params \\ %{}) do
     article
     |> Ecto.Changeset.cast(params, fields())
