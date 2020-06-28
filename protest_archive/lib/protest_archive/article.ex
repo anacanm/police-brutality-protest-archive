@@ -43,6 +43,19 @@ defmodule ProtestArchive.Article do
     |> Ecto.Changeset.validate_required(required_fields)
   end
 
+  def since(since) when is_bitstring(since) do
+    {:ok, since, _} = DateTime.from_iso8601("#{since}T00:00:00Z")
+    until = DateTime.truncate(DateTime.utc_now(), :second)
+
+    handle_between(since, until)
+  end
+
+  def since(since) do
+    until = DateTime.truncate(DateTime.utc_now(), :second)
+
+    handle_between(since, until)
+  end
+
   def between(since, until) when is_bitstring(since) and is_bitstring(until) do
     {:ok, since, _} = DateTime.from_iso8601("#{since}T00:00:00Z")
     {:ok, until, _} = DateTime.from_iso8601("#{until}T00:00:00Z")
