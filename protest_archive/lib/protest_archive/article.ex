@@ -1,6 +1,7 @@
 defmodule ProtestArchive.Article do
   use Ecto.Schema
   alias ProtestArchive.{Repo, Article}
+  import Ecto.Query, only: [from: 2]
 
   schema "articles" do
     field(:title, :string)
@@ -40,5 +41,25 @@ defmodule ProtestArchive.Article do
     |> Ecto.Changeset.cast(params, fields)
     |> Ecto.Changeset.unique_constraint([:title, :author])
     |> Ecto.Changeset.validate_required(required_fields)
+  end
+
+  def between(since, until) when is_bitstring(since) and is_bitstring(until) do
+    {:ok, since, _} = DateTime.from_iso8601("#{since}T00:00:00Z")
+    {:ok, until, _} = DateTime.from_iso8601("#{until}T00:00:00Z")
+
+    handle_between(since, until)
+  end
+
+  def between(since, until), do: handle_between(since, until)
+
+  @spec handle_between(DateTime.t(), DateTime.t()) :: term()
+  defp handle_between(since, until) do
+    query =
+      from(a in Article,
+        where: a.published_at >= ^since and a.published_at <= ^until,
+        select: a
+      )
+
+    Repo.all(query)
   end
 end
