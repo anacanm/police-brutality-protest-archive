@@ -44,6 +44,12 @@ defmodule ProtestArchive.CollectHelper do
     }&"
   end
 
+  defp base_url(:news, num_results, _from = "recent") do
+    "https://newsapi.org/v2/everything?language=en&sortBy=publishedAt&pageSize=#{num_results}&apiKey=#{
+      Application.fetch_env!(:protest_archive, :news_api_key)
+    }&"
+  end
+
   defp base_url(:news, num_results, from) do
     "https://newsapi.org/v2/everything?language=en&pageSize=#{num_results}&from=#{from}&apiKey=#{
       Application.fetch_env!(:protest_archive, :news_api_key)
