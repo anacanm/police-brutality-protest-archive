@@ -14,6 +14,15 @@ defmodule ProtestArchive.Article do
     field(:tag, :string)
   end
 
+  @spec insert_all(list(map)) :: list(term)
+  def insert_all(list_of_params) do
+    # insert_all is not optimized, but I need to move on.
+    # however, this lack of optimization is okay, because there are a fixed amount (not dynamic)
+    # of insertions to the database in a given period of time
+
+    list_of_params
+    |> Enum.map(&insert_one(&1))
+  end
 
   @spec insert_one(map) :: {:ok, %ProtestArchive.Article{}} | {:error, term}
   def insert_one(params) do
@@ -23,13 +32,13 @@ defmodule ProtestArchive.Article do
 
   @spec changeset(%ProtestArchive.Article{}, map) :: term
   def changeset(article, params \\ %{}) do
-    article
-    |> Ecto.Changeset.cast(params, fields())
-    |> Ecto.Changeset.unique_constraint([:title, :author])
-    |> Ecto.Changeset.validate_required(fields())
-  end
+    fields = [:title, :author, :source, :url, :content, :description, :published_at, :url_to_image, :tag]
 
-  defp fields do
-    [:title, :author, :source, :url, :content, :description, :published_at, :url_to_image, :tag]
+    required_fields = [:title, :source, :url, :content, :description, :published_at, :url_to_image, :tag]
+
+    article
+    |> Ecto.Changeset.cast(params, fields)
+    |> Ecto.Changeset.unique_constraint([:title, :author])
+    |> Ecto.Changeset.validate_required(required_fields)
   end
 end
