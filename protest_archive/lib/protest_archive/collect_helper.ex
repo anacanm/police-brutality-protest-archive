@@ -56,6 +56,10 @@ defmodule ProtestArchive.CollectHelper do
     }&"
   end
 
+  defp base_url(:tweet, num_results, _from = "recent") do
+    "https://api.twitter.com/1.1/search/tweets.json?lang=en&result_type=recent&count=#{num_results}&tweet_mode=extended&"
+  end
+
   defp base_url(:tweet, num_results, _from) do
     "https://api.twitter.com/1.1/search/tweets.json?lang=en&count=#{num_results}&tweet_mode=extended&"
   end
