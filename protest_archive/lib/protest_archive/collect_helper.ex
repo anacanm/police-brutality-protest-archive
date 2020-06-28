@@ -126,7 +126,7 @@ defmodule ProtestArchive.CollectHelper do
         :author => tweet["user"]["name"],
         :author_handle => "@#{tweet["user"]["screen_name"]}",
         :published_at => twitter_date_to_iso8601(tweet["created_at"]),
-        :text => tweet["full_text"],
+        :content => tweet["full_text"],
         :url => "https://twitter.com/#{tweet["user"]["id_str"]}/statuses/#{tweet["id_str"]}",
         :url_to_profile_image => tweet["user"]["profile_image_url_https"]
       }
