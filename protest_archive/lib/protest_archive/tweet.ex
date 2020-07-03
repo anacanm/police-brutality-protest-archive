@@ -1,5 +1,6 @@
 defmodule ProtestArchive.Tweet do
   use Ecto.Schema
+  alias ProtestArchive.{Repo, Tweet}
   @primary_key {:tweet_id, :id, autogenerate: false}
 
   schema "tweets" do
@@ -11,6 +12,18 @@ defmodule ProtestArchive.Tweet do
     field(:content, :string)
     field(:url, :string)
     field(:url_to_profile_image, :string)
+  end
+
+  @spec insert_all(list(map)) :: list(term)
+  def insert_all(list_of_params) do
+    list_of_params
+    |> Enum.map(&insert_one(&1))
+  end
+
+  @spec insert_one(map) :: {:ok, %ProtestArchive.Tweet{}} | {:error, term}
+  def insert_one(params) do
+    changeset(%Tweet{}, params)
+    |> Repo.insert()
   end
 
   @spec changeset(%ProtestArchive.Tweet{}, map) :: term
