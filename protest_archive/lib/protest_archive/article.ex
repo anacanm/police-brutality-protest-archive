@@ -1,7 +1,6 @@
 defmodule ProtestArchive.Article do
   use Ecto.Schema
   alias ProtestArchive.{Repo, Article}
-  import Ecto.Query, only: [from: 2]
 
   schema "articles" do
     field(:title, :string)

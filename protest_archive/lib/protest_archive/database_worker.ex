@@ -2,6 +2,14 @@ defmodule ProtestArchive.DatabaseWorker do
   alias ProtestArchive.{Article, Tweet, Repo}
   import Ecto.Query, only: [from: 2]
 
+  def get_tag(:news, tag) do
+    handle_tag(Article, tag)
+  end
+
+  def get_tag(:tweet, tag) do
+    handle_tag(Article, tag)
+  end
+
   def get_between(:news, since, until) do
     handle_between(Article, since, until)
   end
@@ -52,10 +60,20 @@ defmodule ProtestArchive.DatabaseWorker do
 
   ## helpers
 
-  defp handle_between(table_name, since, until) do
+  defp handle_between(schema, since, until) do
     query =
-      from(d in table_name,
+      from(d in schema,
         where: d.published_at >= ^since and d.published_at <= ^until,
+        select: d
+      )
+
+    Repo.all(query)
+  end
+
+  defp handle_tag(schema, tag) do
+    query =
+      from(d in schema,
+        where: d.tag == ^tag,
         select: d
       )
 
