@@ -5,8 +5,8 @@ defmodule ProtestArchive.Application do
     children = [
       ProtestArchive.ProcessRegistry,
       ProtestArchive.Repo,
-      ProtestArchive.CacheSupervisor,
-      ProtestArchive.Collect
+      {Task.Supervisor, name: ProtestArchive.TaskSupervisor},
+      ProtestArchive.CacheSupervisor
     ]
 
     options = [strategy: :one_for_one]

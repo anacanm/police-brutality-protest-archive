@@ -1,32 +1,63 @@
 defmodule ProtestArchive.CollectWorker do
-  use GenServer, restart: :transient
-  alias ProtestArchive.{CollectHelper}
+  alias ProtestArchive.{CollectHelper, DatabaseWorker, Cache}
 
-  @moduledoc """
-  ProtestArchive.CollectWorker provides an interface for collecting (fetching and saving to the cache and database) news and tweet data
+  @doc """
+  get_and_save_to_db queries the specified (By the type param) api, decodes and handles the response,
+  saves that data to the database and returns the data
   """
-
-  # Client
-
-  def start_link(_) do
-    IO.puts("Starting collect worker")
-    GenServer.start_link(__MODULE__, [])
-  end
-
-  def get(pid, {type, tag}, num_results, from) do
-    GenServer.call(pid, {:get, {type, tag}, num_results, from})
-  end
-
-  # Server
-
-  @impl true
-  def init(state \\ []) do
-    {:ok, state}
-  end
-
-  @impl true
-  def handle_call({:get, {type, tag}, num_results, from}, _from, _state) do
+  @spec get_and_save_to_db(atom, String.t(), number | String.t(), String.t() | nil) :: list(map)
+  def get_and_save_to_db(type, tag, num_results \\ 100, from \\ "recent") do
     data = CollectHelper.get_data!({type, tag}, num_results, from)
-    {:reply, data, []}
+
+    Task.Supervisor.start_child(ProtestArchive.TaskSupervisor, fn ->
+      DatabaseWorker.insert(type, data)
+    end)
+
+    data
+  end
+
+  @spec get_and_save_to_cache(atom, String.t(), number | String.t(), String.t() | nil) :: list(map)
+  def get_and_save_to_cache(type, tag, num_results \\ 25, from \\ "recent") do
+    data = CollectHelper.get_data!({type, tag}, num_results, from)
+
+    Task.Supervisor.start_child(ProtestArchive.TaskSupervisor, fn ->
+      Cache.put({type, tag}, data)
+    end)
+
+    data
+  end
+
+  @spec get_and_save_to_db_and_cache(atom, String.t(), number | String.t(), String.t() | nil) :: list(map)
+  def get_and_save_to_db_and_cache(type, tag, num_results \\ 100, from \\ "recent") do
+    data = CollectHelper.get_data!({type, tag}, num_results, from)
+
+    Task.Supervisor.start_child(ProtestArchive.TaskSupervisor, fn ->
+      Cache.put({type, tag}, data)
+      DatabaseWorker.insert(type, data)
+    end)
+
+    data
+  end
+
+  def save_to_db(type, tag, num_results \\ 100, from \\ "recent") do
+    Task.Supervisor.start_child(ProtestArchive.TaskSupervisor, fn ->
+      data = CollectHelper.get_data!({type, tag}, num_results, from)
+      DatabaseWorker.insert(type, data)
+    end)
+  end
+
+  def save_to_cache(type, tag, num_results \\ 25, from \\ "recent") do
+    Task.Supervisor.start_child(ProtestArchive.TaskSupervisor, fn ->
+      data = CollectHelper.get_data!({type, tag}, num_results, from)
+      Cache.put({type, tag}, data)
+    end)
+  end
+
+  def save_to_db_and_cache(type, tag, num_results \\ 100, from \\ "recent") do
+    Task.Supervisor.start_child(ProtestArchive.TaskSupervisor, fn ->
+      data = CollectHelper.get_data!({type, tag}, num_results, from)
+      Cache.put({type, tag}, data)
+      DatabaseWorker.insert(type, data)
+    end)
   end
 end
