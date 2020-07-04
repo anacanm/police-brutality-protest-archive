@@ -5,6 +5,7 @@ defmodule ProtestArchive.Application do
     children = [
       ProtestArchive.ProcessRegistry,
       ProtestArchive.Repo,
+      {Task.Supervisor, name: ProtestArchive.TaskSupervisor},
       ProtestArchive.CacheSupervisor
     ]
 
