@@ -4,10 +4,9 @@ defmodule ProtestArchive.CacheSupervisor do
   def start_link() do
     IO.inspect("Starting cache supervisor")
 
-    tags = ["black lives matter", "police brutality", "protest"]
 
     children =
-      for tag <- tags, type <- [:news, :tweet] do
+      for tag <- tags(), type <- [:news, :tweet] do
         Supervisor.child_spec(Cache, id: {type, tag}, start: {Cache, :start_link, [{type, tag}]})
       end
 
@@ -21,5 +20,9 @@ defmodule ProtestArchive.CacheSupervisor do
       start: {__MODULE__, :start_link, []},
       type: :supervisor
     }
+  end
+
+  def tags() do
+    ["black lives matter", "police brutality", "protest"]
   end
 end
