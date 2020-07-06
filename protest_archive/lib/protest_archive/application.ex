@@ -6,7 +6,7 @@ defmodule ProtestArchive.Application do
       ProtestArchive.ProcessRegistry,
       ProtestArchive.Periodic,
       ProtestArchive.Repo,
-      {Task.Supervisor, name: ProtestArchive.TaskSupervisor},
+      {Task.Supervisor, retart: :transient, name: ProtestArchive.TaskSupervisor},
       ProtestArchive.CacheSupervisor
     ]
 
