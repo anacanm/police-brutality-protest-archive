@@ -29,12 +29,12 @@ defmodule ProtestArchive.Periodic do
 
   def delegate_work(type, :cache) do
     CacheSupervisor.tags()
-    |> Enum.each(fn tag -> CollectWorker.get_and_save_to_cache(type, tag) end)
+    |> Enum.each(fn tag -> CollectWorker.save_to_cache(type, tag) end)
   end
 
   def delegate_work(type, :db) do
     CacheSupervisor.tags()
-    |> Enum.each(fn tag -> CollectWorker.get_and_save_to_db(type, tag) end)
+    |> Enum.each(fn tag -> CollectWorker.save_to_db(type, tag) end)
   end
 
   #############
