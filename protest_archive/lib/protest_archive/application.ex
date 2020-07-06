@@ -4,8 +4,9 @@ defmodule ProtestArchive.Application do
   def start(_type, _args) do
     children = [
       ProtestArchive.ProcessRegistry,
+      ProtestArchive.Periodic,
       ProtestArchive.Repo,
-      {Task.Supervisor, name: ProtestArchive.TaskSupervisor},
+      {Task.Supervisor, retart: :transient, name: ProtestArchive.TaskSupervisor},
       ProtestArchive.CacheSupervisor
     ]
 
