@@ -1,5 +1,5 @@
 defmodule ProtestArchive.CollectWorker do
-  alias ProtestArchive.{CollectHelper, DatabaseWorker, Cache}
+  alias ProtestArchive.{CollectHelper, DatabaseWorker, Cache, CacheSupervisor}
 
   @doc """
   get_and_save_to_db queries the specified (By the type param) api, decodes and handles the response,
@@ -59,5 +59,22 @@ defmodule ProtestArchive.CollectWorker do
       Cache.put({type, tag}, data)
       DatabaseWorker.insert(type, data)
     end)
+  end
+
+  @doc """
+  get all from cache asynchronously reads all cache data for the specified type (:news or :tweet)
+  and returns the result in a single, unsorted list
+  """
+  @spec get_all_from_cache(:news | :tweet) :: list(map)
+  def get_all_from_cache(type) do
+    # spawn task processes that collect from caches
+    Enum.map(CacheSupervisor.tags(), fn tag ->
+      Task.Supervisor.async(ProtestArchive.TaskSupervisor, fn ->
+        Cache.get({type, tag})
+      end)
+    end)
+    |> Enum.reduce([], fn task, acc -> Task.await(task) ++ acc end)
+
+    # and then reduce all results into one UNSORTED list
   end
 end
