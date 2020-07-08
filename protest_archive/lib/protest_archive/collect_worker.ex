@@ -74,6 +74,7 @@ defmodule ProtestArchive.CollectWorker do
       end)
     end)
     |> Enum.reduce([], fn task, acc -> Task.await(task) ++ acc end)
+    |> Enum.uniq()
 
     # and then reduce all results into one UNSORTED list
   end
