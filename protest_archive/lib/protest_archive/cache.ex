@@ -61,10 +61,10 @@ defmodule ProtestArchive.Cache do
           [] ->
             cond do
               type == :news ->
-                CollectWorker.get_and_save_to_db(:news, tag, 25, nil)
+                CollectWorker.get_and_save_to_db(:news, tag, 50, nil)
 
               type == :tweet ->
-                CollectWorker.get_and_save_to_db(:tweet, tag, 25, "recent")
+                CollectWorker.get_and_save_to_db(:tweet, tag, 50, "recent")
             end
 
           new_state_from_db ->

@@ -29,12 +29,12 @@ defmodule ProtestArchive.Periodic do
 
   def delegate_work(:news, :cache) do
     CacheSupervisor.tags()
-    |> Enum.each(fn tag -> CollectWorker.save_to_cache(:news, tag, 25, nil) end)
+    |> Enum.each(fn tag -> CollectWorker.save_to_cache(:news, tag, 50, nil) end)
   end
 
   def delegate_work(:tweet, :cache) do
     CacheSupervisor.tags()
-    |> Enum.each(fn tag -> CollectWorker.save_to_cache(:tweet, tag, 25, "recent") end)
+    |> Enum.each(fn tag -> CollectWorker.save_to_cache(:tweet, tag, 50, "recent") end)
   end
 
   def delegate_work(:news, :db) do
