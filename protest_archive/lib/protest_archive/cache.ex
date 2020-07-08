@@ -59,7 +59,13 @@ defmodule ProtestArchive.Cache do
       true ->
         case DatabaseWorker.get_tag(type, tag, "published_at") do
           [] ->
-            CollectHelper.get_data!({type, tag}, 25, "recent")
+            cond do
+              type == :news ->
+                CollectHelper.get_data!({:news, tag}, 25, nil)
+
+              type == :tweet ->
+                CollectHelper.get_data!({:tweet, tag}, 25, "recent")
+            end
 
           new_state_from_db ->
             new_state_from_db

@@ -1,7 +1,7 @@
 defmodule ProtestArchive.CollectHelper do
   # API ##########################################################################
 
-  @spec get_data!(tuple, number | String.t(), String.t()) :: list(map)
+  @spec get_data!(tuple, number | String.t(), nil | String.t()) :: list(map)
   def get_data!({type, tag}, num_results, from) do
     url({type, tag}, num_results, from)
     |> fetch_data!(type)
@@ -30,13 +30,13 @@ defmodule ProtestArchive.CollectHelper do
 
   # building url #######################################################
 
-  @spec url(tuple, number, String.t()) :: String.t()
+  @spec url(tuple, number, nil | String.t()) :: String.t()
   defp url({type, tag}, num_results, from) do
     base_url(type, num_results, from)
     |> add_tag(type, tag)
   end
 
-  @spec base_url(atom, number | String.t(), String.t()) :: String.t()
+  @spec base_url(atom, number | String.t(), nil | String.t()) :: String.t()
   defp base_url(:news, num_results, _from = nil) do
     # if no _from is provided (default val is nil), let news api calculate oldest date
     "https://newsapi.org/v2/everything?language=en&pageSize=#{num_results}&apiKey=#{
