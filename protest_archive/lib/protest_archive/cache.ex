@@ -1,6 +1,6 @@
 defmodule ProtestArchive.Cache do
   use GenServer, restart: :transient
-  alias ProtestArchive.{ProcessRegistry, CollectHelper, DatabaseWorker, CollectWorker}
+  alias ProtestArchive.{ProcessRegistry, DatabaseWorker, CollectWorker}
 
   def start_link(name = {type, tag}) do
     IO.inspect("Starting cache: type: #{type} tag: #{tag}")
