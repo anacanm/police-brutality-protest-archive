@@ -1,0 +1,11 @@
+<div class="tweet">
+    <div id="tweet_author_container">
+        <h4 id="tweet_published_at"><%= String.slice(DateTime.to_string(@tweet.published_at || DateTime.truncate(DateTime.utc_now(), :second)), 0, 10) %></h4>
+        <a href = <%= @tweet.url%> target = "_blank" id="tweet_author_and_handle">
+            <img id="tweet_profile_pic" src=<%= @tweet.url_to_profile_image%>>
+            <h4 id="tweet_author_name"><%= @tweet.author %></h4>
+            <h5 id="tweet_author_handle"><%= @tweet.author_handle %></h5>
+        </a>
+    </div>
+    <p id ="tweet_content"><%= @tweet.content %> </p>
+</div>

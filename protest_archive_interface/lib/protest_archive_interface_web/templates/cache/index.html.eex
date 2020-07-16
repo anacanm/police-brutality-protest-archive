@@ -1,0 +1,15 @@
+<div id="cache_container">
+  <div id="articles_container">
+    <h3 id = "news_header">News</h3>
+    <%= for article <- @articles do %>
+      <%= render InterfaceWeb.SharedView, "article.html", article: article %>
+    <% end %>
+  </div>
+
+  <div id="tweets_container">
+    <h3>Tweets</h3>
+    <%= for tweet <- @tweets do %>
+      <%= render InterfaceWeb.SharedView, "tweet.html", tweet: tweet %>
+    <% end %>
+  </div>
+</div>

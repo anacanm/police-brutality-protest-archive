@@ -16,7 +16,8 @@ defmodule InterfaceWeb.Router do
   scope "/", InterfaceWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", CacheController, :index
+    get "/archive", ArchiveController, :show
   end
 
   # Other scopes may use custom stacks.
