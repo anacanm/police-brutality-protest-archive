@@ -1,6 +1,6 @@
 defmodule ProtestArchive.Cache do
   use GenServer, restart: :transient
-  alias ProtestArchive.{ProcessRegistry, CollectHelper, DatabaseWorker}
+  alias ProtestArchive.{ProcessRegistry, DatabaseWorker, CollectWorker}
 
   def start_link(name = {type, tag}) do
     IO.inspect("Starting cache: type: #{type} tag: #{tag}")
@@ -59,7 +59,13 @@ defmodule ProtestArchive.Cache do
       true ->
         case DatabaseWorker.get_tag(type, tag, "published_at") do
           [] ->
-            CollectHelper.get_data!({type, tag}, 25, "recent")
+            cond do
+              type == :news ->
+                CollectWorker.get_and_save_to_db(:news, tag, 50, nil)
+
+              type == :tweet ->
+                CollectWorker.get_and_save_to_db(:tweet, tag, 50, "recent")
+            end
 
           new_state_from_db ->
             new_state_from_db

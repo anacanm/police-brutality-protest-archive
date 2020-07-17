@@ -27,14 +27,24 @@ defmodule ProtestArchive.Periodic do
     {:noreply, []}
   end
 
-  def delegate_work(type, :cache) do
+  def delegate_work(:news, :cache) do
     CacheSupervisor.tags()
-    |> Enum.each(fn tag -> CollectWorker.save_to_cache(type, tag) end)
+    |> Enum.each(fn tag -> CollectWorker.save_to_cache(:news, tag, 50, nil) end)
   end
 
-  def delegate_work(type, :db) do
+  def delegate_work(:tweet, :cache) do
     CacheSupervisor.tags()
-    |> Enum.each(fn tag -> CollectWorker.save_to_db(type, tag) end)
+    |> Enum.each(fn tag -> CollectWorker.save_to_cache(:tweet, tag, 50, "recent") end)
+  end
+
+  def delegate_work(:news, :db) do
+    CacheSupervisor.tags()
+    |> Enum.each(fn tag -> CollectWorker.save_to_db(:news, tag, 100, nil) end)
+  end
+
+  def delegate_work(:tweet, :db) do
+    CacheSupervisor.tags()
+    |> Enum.each(fn tag -> CollectWorker.save_to_db(:tweet, tag, 100, "recent") end)
   end
 
   #############
