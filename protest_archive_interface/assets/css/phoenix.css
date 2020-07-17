@@ -125,6 +125,24 @@ bottom: -15px;
 }
 
 
+#form_container {
+  overflow: hidden;
+  width: auto;
+  display: inline;
+}
+
+.form_option {
+  /* margin-left: 10px; */
+  margin-right: 10px;
+  float: left;
+}
+
+#table {
+  width: 100%
+  
+}
+
+
 a:link{
   color: #b57dd1;
 }
