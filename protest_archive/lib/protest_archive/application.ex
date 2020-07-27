@@ -5,6 +5,7 @@ defmodule ProtestArchive.Application do
     children = [
       ProtestArchive.ProcessRegistry,
       ProtestArchive.Periodic,
+      ProtestArchive.StartDatabase,
       ProtestArchive.Repo,
       {Task.Supervisor, retart: :transient, name: ProtestArchive.TaskSupervisor},
       ProtestArchive.CacheSupervisor
